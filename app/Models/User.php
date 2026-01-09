@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -44,5 +45,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relation : Un utilisateur peut avoir plusieurs consentements cookies (historique)
+     *
+     * @return HasMany
+     */
+    public function cookieConsents(): HasMany
+    {
+        return $this->hasMany(CookieConsent::class);
+    }
+
+    /**
+     * Récupère le dernier consentement cookie de l'utilisateur
+     *
+     * @return CookieConsent|null
+     */
+    public function latestCookieConsent(): ?CookieConsent
+    {
+        return $this->cookieConsents()->latest()->first();
     }
 }

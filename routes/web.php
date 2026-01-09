@@ -5,6 +5,7 @@ use App\Http\Controllers\IdeaController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\CookieConsentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,10 @@ Route::middleware(['auth'])->group(function () {
 // ------------- Intentional Open Redirect Vulnerability -------------
 Route::get('/redirect', [RedirectController::class, 'vulnerableRedirect'])
     ->name('redirect.vulnerable');
+
+// ------------- Cookie Consent (CNIL compliance) -------------
+Route::post('/cookie-consent', [CookieConsentController::class, 'store'])
+    ->name('cookie.consent');
 
 // ------------- Authentication routes from Breeze -------------
 require __DIR__.'/auth.php';

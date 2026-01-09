@@ -26,5 +26,8 @@
                 {{ $slot }}
             </div>
         </div>
+
+        {{-- Cookie consent banner (CNIL compliant) --}}
+        <x-cookie-consent-banner />
     </body>
 </html>

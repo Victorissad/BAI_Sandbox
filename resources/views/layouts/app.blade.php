@@ -48,5 +48,8 @@
     @yield('content')
 </main>
 
+{{-- Cookie consent banner (CNIL compliant) --}}
+<x-cookie-consent-banner />
+
 </body>
 </html>
