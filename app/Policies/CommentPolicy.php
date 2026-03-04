@@ -7,11 +7,11 @@ use App\Models\User;
 
 class CommentPolicy
 {
+    /**
+     * Autorisé si l'utilisateur est l'auteur du commentaire ou un admin.
+     */
     public function delete(User $user, Comment $comment): bool
     {
-        // TODO: restrict deletion to:
-        // - the comment author
-        // - OR an admin
-        return true; // Vulnerable on purpose
+        return $user->id === $comment->user_id || $user->isAdmin();
     }
 }

@@ -43,14 +43,18 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/ideas/{idea}/comments/{comment}', [CommentController::class, 'destroy'])
         ->name('comments.destroy');
 
-    // Logs page — currently no admin restriction (intentional)
+    // Logs page — réservé aux administrateurs
     Route::get('/logs', [LogController::class, 'index'])
-        ->name('logs.index');
+        ->name('logs.index')
+        ->middleware('admin');
 });
 
 // ------------- Intentional Open Redirect Vulnerability -------------
 Route::get('/redirect', [RedirectController::class, 'vulnerableRedirect'])
     ->name('redirect.vulnerable');
+
+// ------------- Page Vie privée / Charte RGPD (publique) -------------
+Route::get('/vie-privee', fn () => view('privacy'))->name('privacy');
 
 // ------------- Cookie Consent (CNIL compliance) -------------
 Route::post('/cookie-consent', [CookieConsentController::class, 'store'])

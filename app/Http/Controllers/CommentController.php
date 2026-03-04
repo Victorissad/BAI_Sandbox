@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Idea;
 use App\Models\Comment;
+use App\Services\Logging\ActionLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,11 +27,19 @@ class CommentController extends Controller
      */
     public function store(Request $request, Idea $idea)
     {
-        Comment::create([
+        $comment = Comment::create([
             'idea_id'     => $idea->id,
             'user_id'     => Auth::id(),
             'description' => $request->input('description'), // XSS vulnerable
         ]);
+
+        app(ActionLogService::class)->log(
+            userId: Auth::id(),
+            action: 'comment_created',
+            ideaId: $idea->id,
+            commentId: $comment->id,
+            request: $request,
+        );
 
         return redirect()
             ->route('ideas.show', $idea)
@@ -38,13 +47,19 @@ class CommentController extends Controller
     }
 
     /**
-     * Remove a comment.
-     *
-     * NOTE:
-     * - No authorization check ANY user can delete ANY comment (TODO)
+     * Remove a comment — réservé à l'auteur ou un admin.
      */
     public function destroy(Idea $idea, Comment $comment)
     {
+        $this->authorize('delete', $comment);
+
+        app(ActionLogService::class)->log(
+            userId: Auth::id(),
+            action: 'comment_deleted',
+            ideaId: $idea->id,
+            commentId: $comment->id,
+        );
+
         $comment->delete();
 
         return redirect()

@@ -21,10 +21,15 @@
 
         <div class="flex space-x-4">
             <a href="{{ route('ideas.index') }}" class="font-bold">Ideas</a>
-            <a href="{{ route('logs.index') }}">Logs</a>
+            @auth
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('logs.index') }}">Logs</a>
+                @endif
+            @endauth
             <a href="{{ route('redirect.vulnerable', ['url' => 'https://google.com']) }}">
                 Open Redirect Test
             </a>
+            <a href="{{ route('privacy') }}">Vie privée</a>
         </div>
 
         <div class="flex space-x-4">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Idea;
+use App\Services\Logging\ActionLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,6 +59,13 @@ class IdeaController extends Controller
             'application' => $request->input('application'),
         ]);
 
+        app(ActionLogService::class)->log(
+            userId: Auth::id(),
+            action: 'idea_created',
+            ideaId: $idea->id,
+            request: $request,
+        );
+
         return redirect()
             ->route('ideas.show', $idea)
             ->with('status', 'Idea created (vulnerable version).');
@@ -73,26 +81,33 @@ class IdeaController extends Controller
     }
 
     /**
-     * Show edit form.
-     *
-     * SECURITY NOTE:
-     * - No authorization: ANY user can edit ANY idea (intentionally vulnerable) (TODO)
+     * Show edit form — réservé à l'auteur ou un admin.
      */
     public function edit(Idea $idea)
     {
+        $this->authorize('update', $idea);
         return view('ideas.edit', compact('idea'));
     }
 
     /**
-     * Update the idea.
+     * Update the idea — réservé à l'auteur ou un admin.
      */
     public function update(Request $request, Idea $idea)
     {
+        $this->authorize('update', $idea);
+
         $idea->update([
             'title'       => $request->input('title'),
             'description' => $request->input('description'),
             'application' => $request->input('application'),
         ]);
+
+        app(ActionLogService::class)->log(
+            userId: Auth::id(),
+            action: 'idea_updated',
+            ideaId: $idea->id,
+            request: $request,
+        );
 
         return redirect()
             ->route('ideas.show', $idea)
@@ -100,13 +115,18 @@ class IdeaController extends Controller
     }
 
     /**
-     * Remove an idea.
-     *
-     * SECURITY NOTE:
-     * - No authorization check  ANY user can delete ANY idea (TODO)
+     * Remove an idea — réservé à l'auteur ou un admin.
      */
     public function destroy(Idea $idea)
     {
+        $this->authorize('delete', $idea);
+
+        app(ActionLogService::class)->log(
+            userId: Auth::id(),
+            action: 'idea_deleted',
+            ideaId: $idea->id,
+        );
+
         $idea->delete();
 
         return redirect()

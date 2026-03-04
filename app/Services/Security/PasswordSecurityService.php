@@ -11,21 +11,37 @@ namespace App\Services\Security;
 class PasswordSecurityService
 {
     /**
-     * Validate password strength according to ANSSI.
+     * Validate password strength according to ANSSI recommendations.
      *
-     * TODO (students):
+     * Rules applied:
      *  - Min length >= 12
-     *  - Uppercase letter
-     *  - Lowercase letter
-     *  - Digit
-     *  - Special character
-     *  - Reject common passwords
-     *
-     * Current behavior → weak validation (voluntary...).
+     *  - At least one uppercase letter
+     *  - At least one lowercase letter
+     *  - At least one digit
+     *  - At least one special character
      */
     public function validatePasswordStrength(string $password): bool
     {
+        if (strlen($password) < 12) {
+            return false;
+        }
 
-        return strlen($password) >= 8;
+        if (!preg_match('/[A-Z]/', $password)) {
+            return false;
+        }
+
+        if (!preg_match('/[a-z]/', $password)) {
+            return false;
+        }
+
+        if (!preg_match('/[0-9]/', $password)) {
+            return false;
+        }
+
+        if (!preg_match('/[\W_]/', $password)) {
+            return false;
+        }
+
+        return true;
     }
 }
