@@ -23,13 +23,15 @@ class ActionLogService
         ?int $commentId = null,
         ?string $dataBefore = null,
         ?string $dataAfter = null,
-        ?Request $request = null
+        ?Request $request = null,
+        ?string $fieldName = null
     ): void {
         ActionLog::create([
             'user_id' => $userId,
             'action' => $action,
             'idea_id' => $ideaId,
             'comment_id' => $commentId,
+            'field_name' => $fieldName,
             'data_before' => $dataBefore,
             'data_after' => $dataAfter,
             'ip_address' => $request?->ip(),

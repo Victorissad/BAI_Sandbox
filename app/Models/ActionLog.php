@@ -22,6 +22,7 @@ class ActionLog extends Model
         'action',
         'idea_id',
         'comment_id',
+        'field_name',
         'data_before',
         'data_after',
         'ip_address',
