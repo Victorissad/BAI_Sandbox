@@ -52,10 +52,24 @@ class IdeaController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'title'       => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:5000'],
+            'application' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $todayCount = Idea::where('user_id', Auth::id())
+            ->whereDate('created_at', today())
+            ->count();
+
+        if ($todayCount >= 2) {
+            return redirect()->back()->withErrors(['limit' => 'Vous ne pouvez pas créer plus de 2 idées par jour.']);
+        }
+
         $idea = Idea::create([
             'user_id'     => Auth::id(),
             'title'       => $request->input('title'),
-            'description' => $request->input('description'), // XSS not escaped
+            'description' => $request->input('description'),
             'application' => $request->input('application'),
         ]);
 

@@ -47,6 +47,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logs', [LogController::class, 'index'])
         ->name('logs.index')
         ->middleware('admin');
+
+    Route::delete('/logs/purge', [LogController::class, 'purge'])
+        ->name('logs.purge')
+        ->middleware('admin');
 });
 
 // ------------- Intentional Open Redirect Vulnerability -------------

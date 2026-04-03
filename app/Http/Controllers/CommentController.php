@@ -27,10 +27,20 @@ class CommentController extends Controller
      */
     public function store(Request $request, Idea $idea)
     {
+        $request->validate([
+            'description' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $commentCount = Comment::where('user_id', Auth::id())->count();
+
+        if ($commentCount >= 3) {
+            return redirect()->back()->withErrors(['limit' => 'Vous ne pouvez pas écrire plus de 3 commentaires.']);
+        }
+
         $comment = Comment::create([
             'idea_id'     => $idea->id,
             'user_id'     => Auth::id(),
-            'description' => $request->input('description'), // XSS vulnerable
+            'description' => $request->input('description'),
         ]);
 
         app(ActionLogService::class)->log(
